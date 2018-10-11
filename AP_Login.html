@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    h1 {text-align:center;}
+    p {text-align:center;}
+    fieldset {
+        text-align:center;
+        display: block;
+        margin-left: 100px;
+        margin-right: 100px;
+        padding-top: 0.35em;
+        padding-bottom: 0.625em;
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+        border: 2px groove (internal value);
+    }
+    form {text-align:center;}
+    input[type=text] {
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: 3px solid #ccc;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+        outline: none;
+    }
+    input[type=text]:focus {
+        border: 3px solid #555;
+    }
+    input[type=password] {
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: 3px solid #ccc;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+        outline: none;
+    }
+    input[type=password]:focus {
+        border: 3px solid #555;
+    }
+    select{
+        border: 3px solid #ccc;
+    }
+    select:focus{
+        border: 3px solid #555;
+    }
+    body.sansserif {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+</style>
+</head>
+<body class="sansserif">
+
+    <h1>Project "IOUTI"</h1>
+
+    <p>Login WebPage for your ESP32</p>
+    <fieldset>
+        <form method="post">
+                SSID:<br>
+            <input type="text" name="SSID"><br>
+                PASSWORD:<br>
+            <input type="password" name="PASS"><br>
+                ESP32 type:<br><br>
+            <select name="type">
+                <option value="none" selected>None</option>
+                <option value="light">Light</option>
+                <option value="Example1">Lorem Ipsum</option>
+                <option value="Example2">Ipsum Lorem</option>
+              </select>
+              <br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </fieldset>
+</body>
+</html>
