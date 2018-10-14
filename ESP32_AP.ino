@@ -2,6 +2,12 @@
 #include <WiFi.h>
 
 WiFiServer server(80);
+//enum Request {NONE,GET,POST};
+const int NONE=0;
+const int GET=1;
+const int POST=2;
+
+
 void setup(){
     WiFi.mode(WIFI_AP);
     Serial.begin(115200);
@@ -93,24 +99,91 @@ void setup(){
     Serial.print("Server is at: ");
     Serial.println(WiFi.softAPIP());
     server.begin();
+    boolean flag=false;
+    boolean whileExit=false;
+    String postBody="";
+    int contentLenght=0;
+    int index=0;
+    int requestDetected=NONE;               //Flag that shows if the request has been detected
+                                            //- 0 : Not detected
+                                            //- 1 : GET detected
+                                            //- 2 : POST detected
+    String currentLine = "";                // make a String to hold incoming data from the client
 
     while(true){
-      // listen for incoming clients
-      WiFiClient client = server.available();
-      if (client) {
-          Serial.println("new client");
-          String currentLine = "";                // make a String to hold incoming data from the client
-      }
-      // listen for incoming clients
-      while (client.connected()) {            // loop while the client's connected
-        if (client.available()) {             // if there's bytes to read from the client,
-          char c = client.read();             // read a byte, then
-          Serial.write(c);                    // print it out the serial monitor
-          if (c == '\n') {                    // if the byte is a newline character
-            // if the current line is blank, you got two newline characters in a row.
-            // that's the end of the client HTTP request, so send a response:
+        // listen for incoming clients
+        WiFiClient client = server.available();
+        if (client) {
+            Serial.println("new client");
+            while (client.connected()) {            // loop while the client's connected
+            if (client.available()) {             // if there's bytes to read from the client,
+                char c = client.read();             // read a byte, then
+                Serial.print(c);                    // print it out the serial monitor
+                currentLine=currentLine+c;
+
+                if(requestDetected==NONE){
+                    if(currentLine.startsWith("GET")){
+                        requestDetected=GET;
+                    }
+                    if(currentLine.startsWith("POST")){
+                        requestDetected=POST;
+                    }
+                }
+            }
+            switch (requestDetected) {
+                case NONE:     //RESQUEST NOT DETECTED
+                    //??
+                break;
+                case GET:     //GET DETECTED
+                    if(currentLine.endsWith("\r\n\r\n")){
+                        if(flag==false){
+                            flag=true;
+                        }else{
+                            flag=false;
+                            Serial.println("END REQUEST");
+                            whileExit=true; //while exit
+                        }
+                    }
+                break;
+                case POST:     //POST DETECTED
+                    if(currentLine.endsWith("\r\n") && contentLenght== 0){
+                        index=currentLine.indexOf("Content-Length: ");
+                        if(index >=0){                           
+                            contentLenght= currentLine.substring(index+16).toInt();
+                        }
+                    }
+                    if(currentLine.indexOf("\r\n\r\n")>0){
+                          contentLenght--;
+                          if(contentLenght<0){
+                            postBody=currentLine.substring(currentLine.indexOf("\r\n\r\n"));
+                            contentLenght=0;
+                            whileExit=true;                         
+                          }
+                    }
+                break;
+            }
+            if(whileExit==true){
+              break;
+            }
+        }//END client connected
+        whileExit=false;
+        // Check to see if the client request was "GET" or "POST":
+        if (requestDetected==POST) {
+            //Example of body of POST: SSID=TEST&PASS=123456789&type=light
+            //CAUTION, PASSWORD NOT ENCRYPTED
+            Serial.println("POST REQUEST");
+            String httpResponse = "";
+            httpResponse += "HTTP/1.1 200 OK\r\n";
+            httpResponse += "\r\n";
+            client.println(httpResponse);
+            requestDetected=NONE;
+            currentLine="";
+            client.stop();
+        }
+        if (requestDetected==GET) {
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
+            Serial.println("GET REQUEST");
             String httpResponse = "";
             httpResponse += "HTTP/1.1 200 OK\r\n";
             httpResponse += "Content-type:text/html\r\n\r\n";
@@ -121,13 +194,14 @@ void setup(){
             // The HTTP response ends with a blank line:
             httpResponse += "\r\n";
             client.println(httpResponse);
+            currentLine="";
+            requestDetected=NONE;
             client.stop();
             Serial.println("Client Disconnected.");
-          }
         }
       }
-  }
-}
+    }//END WHILE
+}//End setup
 
 
 void loop(){
