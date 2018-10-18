@@ -9,12 +9,17 @@ const int POST=2;
 
 
 void setup(){
-    WiFi.mode(WIFI_AP);
+    WiFi.mode(WIFI_AP_STA);
     Serial.begin(115200);
     Serial.println("ESP32 mode: WIFI_AP");
 
-    const char* ssid     = "";
-    const char* password = "";
+    String ssid     = "";
+    String password = "";
+    String type     = "";
+    String xPos     = "";
+    String yPos     = "";
+
+
     const String HTMLPage=""
     "<!DOCTYPE html>\n"
     "<html>\n"
@@ -86,11 +91,17 @@ void setup(){
     "                <option value=\"Example2\">Ipsum Lorem</option>\n"
     "              </select>\n"
     "              <br><br>\n"
+    "            ESP32 X axis:<br>\n"
+    "            <input type=\"text\" name=\"XAXIS\"><br>\n"
+    "            ESP32 Y axis:<br>\n"
+    "            <input type=\"text\" name=\"YAXIS\"><br>\n"
+    "\n"
     "            <input type=\"submit\" value=\"Submit\">\n"
     "        </form>\n"
     "    </fieldset>\n"
     "</body>\n"
-    "</html>\n";
+    "</html>\n"
+    "";
 
 
 
@@ -101,7 +112,7 @@ void setup(){
     server.begin();
     boolean flag=false;
     boolean whileExit=false;
-    String postBody="";
+    String postBody="";                     //MAke a String to save post body data
     int contentLenght=0;
     int index=0;
     int requestDetected=NONE;               //Flag that shows if the request has been detected
@@ -148,37 +159,88 @@ void setup(){
                 case POST:     //POST DETECTED
                     if(currentLine.endsWith("\r\n") && contentLenght== 0){
                         index=currentLine.indexOf("Content-Length: ");
-                        if(index >=0){                           
+                        if(index >=0){
                             contentLenght= currentLine.substring(index+16).toInt();
                         }
                     }
                     if(currentLine.indexOf("\r\n\r\n")>0){
-                          contentLenght--;
-                          if(contentLenght<0){
-                            postBody=currentLine.substring(currentLine.indexOf("\r\n\r\n"));
-                            contentLenght=0;
-                            whileExit=true;                         
-                          }
+                            contentLenght--;
+                            if(contentLenght<0){
+                                postBody=currentLine.substring(currentLine.indexOf("\r\n\r\n"));
+                                contentLenght=0;
+                                whileExit=true;
+                            }
                     }
                 break;
             }
             if(whileExit==true){
-              break;
+                break;
             }
         }//END client connected
         whileExit=false;
         // Check to see if the client request was "GET" or "POST":
         if (requestDetected==POST) {
-            //Example of body of POST: SSID=TEST&PASS=123456789&type=light
             //CAUTION, PASSWORD NOT ENCRYPTED
             Serial.println("POST REQUEST");
             String httpResponse = "";
             httpResponse += "HTTP/1.1 200 OK\r\n";
+            httpResponse += "Content-type:text/html\r\n\r\n";
+            httpResponse += "<h1>POST OK</h1>";
             httpResponse += "\r\n";
+
             client.println(httpResponse);
+            //Example of body of POST: SSID=TEST&PASS=123456789&type=light
+            //Parse SSID
+            int lastIndex=postBody.indexOf("&");
+            ssid=postBody.substring(postBody.indexOf("=")+1,lastIndex);
+            ssid.replace('+',' ');
+            //Parse PASS
+            int initIndex=postBody.indexOf("=",lastIndex);
+            lastIndex=postBody.indexOf("&",lastIndex+1);
+            password=postBody.substring(initIndex+1,lastIndex);
+            //Parse TYPE
+            initIndex=postBody.indexOf("=",lastIndex);
+            lastIndex=postBody.indexOf("&",lastIndex+1);
+            type=postBody.substring(initIndex+1,lastIndex);
+            //Parse xPos
+            initIndex=postBody.indexOf("=",lastIndex);
+            lastIndex=postBody.indexOf("&",lastIndex+1);
+            xPos=postBody.substring(initIndex+1,lastIndex);
+            //Parse yPos
+            initIndex=postBody.indexOf("=",lastIndex);
+            yPos=postBody.substring(initIndex+1);
+
+
+            Serial.println(ssid);
+            Serial.println(password);
+            Serial.println(type);
+            Serial.println(xPos);
+            Serial.println(yPos);
             requestDetected=NONE;
             currentLine="";
             client.stop();
+            
+            Serial.print("Attempting to connect to SSID: ");
+            Serial.println(ssid
+            );
+            WiFi.begin(ssid.c_str(), password.c_str());
+            int count=20;
+            while (WiFi.status() != WL_CONNECTED && count>=0) {
+                delay(500);
+                Serial.print(".");
+                count--;
+            }
+            Serial.println(" ");
+            if(WiFi.status() == WL_CONNECTED){               
+                Serial.println("WiFi connected");
+                Serial.println("IP address: ");
+                Serial.println(WiFi.localIP());
+                break;
+            }else{
+                Serial.println("Unable to connect to: ");
+                Serial.println(ssid);
+            }
+            
         }
         if (requestDetected==GET) {
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
@@ -206,4 +268,5 @@ void setup(){
 
 void loop(){
     delay(1000);
+    Serial.println("loop");
 }
