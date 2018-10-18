@@ -29,4 +29,3 @@ Note that the POST information parser is constructed using the form in AP_Login.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
