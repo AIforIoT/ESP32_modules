@@ -4,7 +4,7 @@ One Paragraph of project description goes here
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.To set up the environment you must install Arduino IDE in your computer (which can be found [here](https://www.arduino.cc/en/Main/Software)) and follow [these instructions] to make it compatible with your ESP32.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.To set up the environment you must install Arduino IDE in your computer (which can be found [here](https://www.arduino.cc/en/Main/Software)) and follow [these instructions](https://www.youtube.com/watch?v=mBaS3YnqDaU) to make it compatible with your ESP32.
 
 ### Prerequisites
 
@@ -28,4 +28,3 @@ Note that the POST information parser is constructed using the form in AP_Login.
 * **Sergi Mercadé** - *Initial work* - [smerca](https://github.com/smerca)
 
 ## License
-
