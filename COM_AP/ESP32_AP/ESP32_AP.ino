@@ -24,6 +24,7 @@ void setup(){
     String xPos     = "";
     String yPos     = "";
     String location = "";
+    String side     = "";
 
     const String HTMLPage=""
     "<!DOCTYPE html>\n"
@@ -84,11 +85,12 @@ void setup(){
     "    <p>Login WebPage for your ESP32</p>\n"
     "    <fieldset>\n"
     "        <form method=\"post\">\n"
-    "                SSID:<br>\n"
+    "            \n"
+    "            SSID:<br>\n"
     "            <input type=\"text\" name=\"SSID\"><br>\n"
-    "                PASSWORD:<br>\n"
+    "            PASSWORD:<br>\n"
     "            <input type=\"password\" name=\"PASS\"><br>\n"
-    "                ESP32 type:<br><br>\n"
+    "            ESP32 type:<br><br>\n"
     "            <select name=\"type\">\n"
     "                <option value=\"none\" selected>None</option>\n"
     "                <option value=\"light\">Light</option>\n"
@@ -98,12 +100,26 @@ void setup(){
     "              <br><br>\n"
     "            Raspi IP:<br>\n"
     "            <input type=\"text\" name=\"RASPIP\"><br>\n"
+    "\n"
     "            ESP32 X axis:<br>\n"
     "            <input type=\"text\" name=\"XAXIS\"><br>\n"
     "            ESP32 Y axis:<br>\n"
     "            <input type=\"text\" name=\"YAXIS\"><br>\n"
     "            ESP32 Location:<br>\n"
-    "            <input type=\"text\" name=\"LOCATION\"><br>\n"
+    "            Side:\n"
+    "            <select name=\"side\">\n"
+    "                <option value=\"none\" selected>None</option>\n"
+    "                <option value=\"left\">Left</option>\n"
+    "                <option value=\"right\">Right</option>\n"
+    "            </select><br>\n"
+    "            Location:\n"
+    "            <select name=\"location\">\n"
+    "                <option value=\"none\" selected>None</option>\n"
+    "                <option value=\"table\">Table</option>\n"
+    "                <option value=\"corner\">Corner</option>\n"
+    "                <option value=\"wall\">Wall</option>\n"
+    "            </select>\n"
+    "            <br><br>\n"
     "\n"
     "            <input type=\"submit\" value=\"Submit\">\n"
     "        </form>\n"
@@ -224,6 +240,8 @@ void setup(){
             yPos=postBody.substring(initIndex+1);
             //Parse location
             initIndex=postBody.indexOf("=",lastIndex);
+            side=postBody.substring(initIndex+1);
+            initIndex=postBody.indexOf("=",lastIndex);
             location=postBody.substring(initIndex+1);
 
 
@@ -233,6 +251,8 @@ void setup(){
             Serial.println(raspip);
             Serial.println(xPos);
             Serial.println(yPos);
+            Serial.println(side);
+            Serial.println(location);
             requestDetected=NONE;
             currentLine="";
             client.stop();

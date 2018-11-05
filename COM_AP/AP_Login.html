@@ -56,11 +56,12 @@
     <p>Login WebPage for your ESP32</p>
     <fieldset>
         <form method="post">
-                SSID:<br>
+            
+            SSID:<br>
             <input type="text" name="SSID"><br>
-                PASSWORD:<br>
+            PASSWORD:<br>
             <input type="password" name="PASS"><br>
-                ESP32 type:<br><br>
+            ESP32 type:<br><br>
             <select name="type">
                 <option value="none" selected>None</option>
                 <option value="light">Light</option>
@@ -70,12 +71,26 @@
               <br><br>
             Raspi IP:<br>
             <input type="text" name="RASPIP"><br>
+
             ESP32 X axis:<br>
             <input type="text" name="XAXIS"><br>
             ESP32 Y axis:<br>
             <input type="text" name="YAXIS"><br>
             ESP32 Location:<br>
-            <input type="text" name="LOCATION"><br>
+            Side:
+            <select name="side">
+                <option value="none" selected>None</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+            </select><br>
+            Location:
+            <select name="location">
+                <option value="none" selected>None</option>
+                <option value="table">Table</option>
+                <option value="corner">Corner</option>
+                <option value="wall">Wall</option>
+            </select>
+            <br><br>
 
             <input type="submit" value="Submit">
         </form>
