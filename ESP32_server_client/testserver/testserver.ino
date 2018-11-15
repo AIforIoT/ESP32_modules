@@ -2,14 +2,15 @@
 
 //WIFI DEFINITIONS
 int status = WL_IDLE_STATUS;
-const char* ssid     = "Aquaris X5 Plus";
-const char* password = "3cdb401cb5d6";
+const char* ssid     = "iPhone de Biel";
+const char* password = "123456789";
 
-
+char c;
 
 
 // Initialize the Wifi server library
 WiFiServer server(80);
+
 
 void setup(){
     Serial.begin(115200);
@@ -42,7 +43,7 @@ void loop(){
             String currentLine = "";                // make a String to hold incoming data from the client
             while (client.connected()) {            // loop while the client's connected
                 if (client.available()) {             // if there's bytes to read from the client,
-                  char c = client.read();             // read a byte, then
+                  c = client.read();             // read a byte, then
                   Serial.write(c);                    // print it out the serial monitor
                 }
                 //This ESP32 server only expects HTTP Request:
@@ -51,38 +52,43 @@ void loop(){
                 if (c != '\r') {  // if you got anything else but a carriage return character,
                     currentLine += c;      // add it to the end of the currentLine
                     // Check to see if the client request was "GET /H" or "GET /L":
-                    if (currentLine.endsWith("GET /H")) {
+                    if (currentLine.endsWith("GET /H ")) {
                         digitalWrite(5, HIGH);               // GET /H turns the REALY on
                         client.println("HTTP/1.1 200 OK");
                         client.println();
                         Serial.println("H request detected");
+                        client.stop();
 
-                    }else if (currentLine.endsWith("GET /L")) {
+                    }else if (currentLine.endsWith("GET /L ")) {
                         digitalWrite(5, LOW);                // GET /L turns the RELAY off
                         client.println("HTTP/1.1 200 OK");
                         client.println();
                         Serial.println("L request detected");
+                        client.stop();
 
-                    }else if (currentLine.endsWith("GET /data/on")) {
+                    }else if (currentLine.endsWith("GET /data/on ")) {
                         // DATA REQUEST FROM RASPI
                         client.println("HTTP/1.1 200 OK");
                         client.println();
                         Serial.println("DATA request detected");
+                        client.stop();
                         //DATA CODE GOES HERE...
 
 
-                    }else if (currentLine.endsWith("GET /data/off")) {
+                    }else if (currentLine.endsWith("GET /data/off ")) {
                         // DATA REQUEST FROM RASPI
                         client.println("HTTP/1.1 200 OK");
                         client.println();
                         Serial.println("NODATA request detected");
+                        client.stop();
                         //NODATA CODE GOES HERE...
 
-                    }else if (currentLine.endsWith("GET /volume")) {
+                    }else if (currentLine.endsWith("GET /volume ")) {
                         // DATA REQUEST FROM RASPI
                         client.println("HTTP/1.1 200 OK");
                         client.println();
                         Serial.println("VOLUME request detected");
+                        client.stop();
                         //VOLUME CODE GOES HERE...
 
                     }
@@ -90,11 +96,9 @@ void loop(){
                     //Error 405 Method Not Allowed
                     client.println("HTTP/1.1 405 Method Not Allowed");
                     client.println();
+                    client.stop();
                 }
             }
-            // close the connection:
-            client.stop();
-            Serial.println("Client Disconnected.");
         }
     }//END WHILE
 }//END LOOP
