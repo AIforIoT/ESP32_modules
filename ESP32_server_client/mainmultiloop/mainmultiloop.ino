@@ -16,6 +16,7 @@
 int status = WL_IDLE_STATUS;
 const char* ssid     = "Aquaris X5 Plus";
 const char* password = "3cdb401cb5d6";
+const char* ip = "192.168.43.81"
 
 char google[] = "www.google.com";
 unsigned long lastConnectionTime = 0;               // last time you connected to the server, in milliseconds
